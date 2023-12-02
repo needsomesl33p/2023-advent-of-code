@@ -10,7 +10,7 @@ TRANSLATION_TABLE: dict[str, str] = {
 
 
 def read_inputfile() -> CalibrationDoc:
-    with open('input.txt', 'r') as inputfile:
+    with open('../input.txt', 'r') as inputfile:
         return inputfile.readlines()
 
 
