@@ -25,7 +25,7 @@ def count_scores(scartchcards: list[str]) -> dict:
         win_num = get_scores(winning_nums, num_pool)
         copies: list = [idx for idx in range(card_no+1, card_no+win_num+1)]
         for copy in copies:
-            table[str(copy)] = table[str(copy)] + table[str(card_no)] * 1
+            table[str(copy)] = table[str(copy)] + table[str(card_no)]
     return table
 
 
