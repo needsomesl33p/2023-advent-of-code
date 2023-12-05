@@ -33,7 +33,6 @@ def gen_copy_table(length) -> dict:
     table: dict = {}
     for idx in range(1, length+1):
         table[f'{idx}'] = 1
-    print(table)
     return table
 
 
