@@ -23,17 +23,17 @@ def find_digit(line: str, start: int, step: int = 1, stop_mod: int = 0) -> str:
             return line[index]
 
 
-def find_words(line: str) -> tuple[str, str]:
-    words: List[tuple(int, str)] = get_words_from_line(line)
+def find_words(line: str) -> tuple:
+    words: list[tuple] = get_words_from_line(line)
     if len(words) == 1:
         return words[0][1], words[0][1]
     if len(words) > 1:
-        sorted_list: List = sorted(words, key=lambda tuple_: tuple_[0])
+        sorted_list = sorted(words, key=lambda tuple_: tuple_[0])
         return sorted_list[0][1], sorted_list[-1][1]
     return None, None
 
 
-def get_words_from_line(line: str) -> List[tuple]:
+def get_words_from_line(line: str) -> list[tuple]:
     table: set = set()
     for word in TRANSLATION_TABLE.keys():
         if word in line:
@@ -49,22 +49,19 @@ def is_string_contains_digit(string: str) -> bool:
 
 def select_cal_values(calibration_doc: CalibrationDoc) -> CalibrationValues:
     calibration_values: CalibrationValues = []
-    digit1: str = ''
-    digit2: str = ''
     for line in calibration_doc:
-        line = line.strip()
         word1, word2 = find_words(line)
         if word1:
             part1: str = line.split(word1)[0]
             part2: str = line.split(word2)[-1]
 
-            digit1 = find_digit(line, 0) if is_string_contains_digit(
+            digit1: str = find_digit(line, 0) if is_string_contains_digit(
                 part1) else TRANSLATION_TABLE[word1]
-            digit2 = find_digit(line, -1, -1, -1) if is_string_contains_digit(
+            digit2: str = find_digit(line, -1, -1, -1) if is_string_contains_digit(
                 part2) else TRANSLATION_TABLE[word2]
         else:
-            digit1 = find_digit(line, 0)
-            digit2 = find_digit(line, -1, -1, -1)
+            digit1: str = find_digit(line, 0)
+            digit2: str = find_digit(line, -1, -1, -1)
 
         calibration_values.append(int(f'{digit1}{digit2}'))
     return calibration_values

@@ -1,3 +1,5 @@
+# This script cosumes all the memory. Kernel will SIGKILL it.
+
 from string import ascii_lowercase
 
 

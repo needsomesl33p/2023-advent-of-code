@@ -1,30 +1,24 @@
-"""
-The input file shows that 1 symbol can argo multiple numbers,
-but 1 number can be adjacent to only 1 symbol.
-
-Biggest number: 3 digits
-
-Note: Should not use typing: list, Tuple etc. 
-3.9 supports type aliasing by default
-"""
-
 import re
+import functools
+import operator
 from string import digits
+
+
 EngineSchematic = list[str]
-GearLocationMatrix = list(tuple[int, int])
+GearLocationMatrix = list[tuple[int, int]]
+
 STAR: str = '*'
 MAX_DEC: int = 4
 
 
 def read_inputfile() -> list[str]:
     with open('../input.txt', 'r', encoding='utf8') as inputfile:
-        return inputfile.readlines()
+        return inputfile.read().splitlines()
 
 
 def search_gears(engine_schematic: EngineSchematic) -> GearLocationMatrix:
-    gear_matrix: list[tuple] = []
+    gear_matrix: GearLocationMatrix = []
     for index, row in enumerate(engine_schematic):
-        row = row.strip()
         for j, symbol in enumerate(row):
             if symbol == STAR:
                 gear_matrix.append((index, j))
@@ -35,13 +29,13 @@ def search_gears(engine_schematic: EngineSchematic) -> GearLocationMatrix:
 def collect_nearby_parts(matrix: GearLocationMatrix, engine_schematic: EngineSchematic) -> list:
     gears = []
     for i, j in matrix:
-        row: str = engine_schematic[i].strip()
-        up_row: str = engine_schematic[i-1].strip()
-        low_row: str = engine_schematic[i+1].strip()
+        row: str = engine_schematic[i]
+        up_row: str = engine_schematic[i-1]
+        low_row: str = engine_schematic[i+1]
         v_nums: list = search_horizontally(row, j)
-        h_nums = search_vertically(j, up_row, low_row)
-        gear_ration: list = multiply_nearby_parts(v_nums, h_nums)
-        gears.append(gear_ration)
+        h_nums: list = search_vertically(j, up_row, low_row)
+        gear_ratio: int = multiply_nearby_parts(v_nums, h_nums)
+        gears.append(gear_ratio)
     return gears
 
 
@@ -66,9 +60,9 @@ def search_vertically(index: int, up_row: str, low_row='') -> list:
     is_low_diag: bool = any(
         symbol in digits for symbol in low_center) and not is_low_vertical
 
-    if up_row and is_up_vertical:
+    if is_up_vertical:
         upper = continue_vertical_search(up_row, index)
-    if low_row and is_low_vertical:
+    if is_low_vertical:
         lower = continue_vertical_search(low_row, index)
     if is_up_diag:
         diag_u = search_diagonally(up_row, index)
@@ -105,14 +99,14 @@ def determine_direction(row: str, index: int) -> str:
     return 'left' if row[index+1] == '.' else 'right'
 
 
-def determine_diag_direction(row: str, index: int):
+def determine_diag_direction(row: str, index: int) -> str:
     if row[index+1] != '.' and row[index-1] != '.':
         return 'both'
     return determine_direction(row, index)
 
 
 def walkthrough(row: str, index: int, direction: str) -> int:
-    numb: str = ''
+    numb = ''
     step: int = -1 if direction == 'left' else 1
     stop: int = index - MAX_DEC if direction == 'left' else index + MAX_DEC
     for idx in range(index, stop, step):
@@ -123,22 +117,18 @@ def walkthrough(row: str, index: int, direction: str) -> int:
     return int(numb[::-1]) if direction == 'left' else int(numb)
 
 
-def multiply_nearby_parts(v_nums, h_nums) -> int:
-    multp: int = 1
-    tmp_list = []
-    tmp_list.extend(v_nums)
-    tmp_list.extend(h_nums)
-    filtered_list = list(filter(lambda num: num != 0, tmp_list))
+def multiply_nearby_parts(v_nums: list, h_nums: list) -> int:
+    v_nums.extend(h_nums)
+    filtered_list = list(filter(lambda num: num != 0, v_nums))
     if len(filtered_list) > 1:
-        for res in filtered_list:
-            multp = multp * res
-    return multp
+        return functools.reduce(operator.mul, filtered_list, 1)
+    return 0
 
 
 def main():
     engine_schematic: EngineSchematic = read_inputfile()
     gear_matrix: GearLocationMatrix = search_gears(engine_schematic)
-    sum_: int = collect_nearby_parts(gear_matrix, engine_schematic)
+    sum_: list = collect_nearby_parts(gear_matrix, engine_schematic)
     print(sum(sum_))
 
 

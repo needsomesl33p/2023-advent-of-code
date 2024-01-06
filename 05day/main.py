@@ -2,15 +2,14 @@ from string import ascii_lowercase
 
 
 def read_inputfile() -> list[str]:
-    with open('test.txt', 'r', encoding='utf8') as inputfile:
-        return inputfile.readlines()
+    with open('input.txt', 'r', encoding='utf8') as inputfile:
+        return inputfile.read().splitlines()
 
 
-def convert_input(input_file: list[str]):
+def convert_input(input_file: list[str]) -> tuple[list, dict]:
     garden_maps: dict[str, list] = {}
     mapping_name: str = ''
-    removed_newlines: list[str] = [string.strip() for string in input_file]
-    removed_empty_lines: list[str] = [row for row in removed_newlines if row]
+    removed_empty_lines: list[str] = [row for row in input_file if row]
     seeds: list[int] = string_to_int(
         input_file[0].split(':')[1].split())
     for line in removed_empty_lines[1:]:

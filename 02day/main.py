@@ -1,5 +1,6 @@
 from typing import List
 Games = List[List[str]]
+
 RED_CUBE: int = 12
 GREEN_CUBE: int = 13
 BLUE_CUBE: int = 14
@@ -13,7 +14,7 @@ def read_inputfile() -> List:
 def convert_dataset(inputfile: List) -> Games:
     games: Games = []
     for line in inputfile:
-        temp: List = line.strip().split(':')
+        temp: List = line.split(':')
         game: List = temp[1][1:].replace(';', ',').split(',')
         games.append(game)
     return games

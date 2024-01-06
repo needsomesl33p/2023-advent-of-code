@@ -2,29 +2,30 @@
 The input file shows that 1 symbol can argo multiple numbers,
 but 1 number can be adjacent to only 1 symbol.
 
-Biggest number: 3 digits
+Biggest number: 3 digits 
 
-Note: Should not use typing: list, Tuple etc. 
-3.9 supports type aliasing by default
+Note: Should not use typing: List, Tuple etc. 
+python3.9 supports type aliasing by default
 """
 
 import re
 from string import digits
+
 EngineSchematic = list[str]
-GearLocationMatrix = list(tuple[int, int])
+GearLocationMatrix = list[tuple[int, int]]
+
 NON_GEARS: str = digits + '.'
 MAX_DEC: int = 4
 
 
 def read_inputfile() -> list[str]:
     with open('input.txt', 'r', encoding='utf8') as inputfile:
-        return inputfile.readlines()
+        return inputfile.read().splitlines()
 
 
 def search_gears(engine_schematic: EngineSchematic) -> GearLocationMatrix:
-    gear_matrix: list[tuple] = []
+    gear_matrix: GearLocationMatrix = []
     for index, row in enumerate(engine_schematic):
-        row = row.strip()
         for j, symbol in enumerate(row):
             if symbol not in NON_GEARS:
                 gear_matrix.append((index, j))
@@ -36,9 +37,9 @@ def collect_nearby_parts(matrix: GearLocationMatrix, engine_schematic: EngineSch
     v_num = 0
     sum_ = 0
     for i, j in matrix:
-        row: str = engine_schematic[i].strip()
-        up_row: str = engine_schematic[i-1].strip()
-        low_row: str = engine_schematic[i+1].strip()
+        row: str = engine_schematic[i]
+        up_row: str = engine_schematic[i-1]
+        low_row: str = engine_schematic[i+1]
         v_num: int = search_horizontally(row, j)
         h_num = search_vertically(j, up_row, low_row)
         sum_ += (v_num + h_num)
@@ -47,15 +48,15 @@ def collect_nearby_parts(matrix: GearLocationMatrix, engine_schematic: EngineSch
 
 def search_horizontally(row: str, index: int) -> int:
     left_adj_num, right_adj_num = 0, 0
-    length: int = len(row) - 1
-    if index - 1 >= 0 and row[index-1] in digits:
+    length: int = len(row)-1
+    if index-1 >= 0 and row[index-1] in digits:
         left_adj_num: int = walkthrough(row, index, 'left')
     if index <= length and row[index+1] in digits:
         right_adj_num: int = walkthrough(row, index, 'right')
     return left_adj_num + right_adj_num
 
 
-def search_vertically(index: int, up_row: str, low_row='') -> tuple[int, int]:
+def search_vertically(index: int, up_row: str, low_row='') -> int:
     upper, lower, diag_u, diag_l = 0, 0, 0, 0
     up_center: str = up_row[index-1:index+2]
     low_center: str = low_row[index-1:index+2]
@@ -65,9 +66,9 @@ def search_vertically(index: int, up_row: str, low_row='') -> tuple[int, int]:
         symbol in digits for symbol in up_center) and not is_up_vertical
     is_low_diag: bool = any(
         symbol in digits for symbol in low_center) and not is_low_vertical
-    if up_row and is_up_vertical:
+    if is_up_vertical:
         upper = continue_vertical_search(up_row, index)
-    if low_row and is_low_vertical:
+    if is_low_vertical:
         lower = continue_vertical_search(low_row, index)
     if is_up_diag:
         diag_u = search_diagonally(up_row, index)
@@ -101,14 +102,14 @@ def determine_direction(row: str, index: int) -> str:
     return 'left' if row[index+1] == '.' else 'right'
 
 
-def determine_diag_direction(row: str, index: int):
+def determine_diag_direction(row: str, index: int) -> str:
     if row[index+1] != '.' and row[index-1] != '.':
         return 'both'
     return determine_direction(row, index)
 
 
 def walkthrough(row: str, index: int, direction: str) -> int:
-    numb: str = ''
+    numb = ''
     step: int = -1 if direction == 'left' else 1
     stop: int = index - MAX_DEC if direction == 'left' else index + MAX_DEC
     for idx in range(index, stop, step):

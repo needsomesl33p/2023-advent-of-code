@@ -3,7 +3,7 @@ def read_inputfile() -> list[str]:
         return inputfile.readlines()
 
 
-def separate_scratchcards(card: str) -> tuple[str, str]:
+def separate_scratchcards(card: str) -> tuple[list, list]:
     card = card.split(':')[1:][0]
     card = card.strip().replace('  ', ' ')
     print(card, end=' - ')
